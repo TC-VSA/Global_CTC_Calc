@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>TC CTC Workbench v37 — Salary Structuring Engine</title>
+<link rel="stylesheet" href="css/app.css"/>
+<link rel="stylesheet" href="css/logo-hover.css"/>
+<link rel="stylesheet" href="css/settings-tabs.css"/>
+</head>
+<body>
+<!-- ============ ACCESS GATE ============ -->
+<div id="gate" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
+<div class="gatecard">
+<div class="gh">
+<div class="gatelogo">
+  <span class="tc-logo-hover" style="height:64px;">
+    <img class="logo-normal" id="gateLogo" src="" alt="TalentCarriage"/>
+    <img class="logo-3d" id="gateLogo3d" src="" alt="TalentCarriage 3D"/>
+  </span>
+</div>
+<h2 id="gateTitle">CTC <em>Calculator</em></h2>
+</div>
+<div class="gb">
+<div class="roleswitch" role="group" aria-label="Access type">
+<button type="button" id="roleClient" aria-pressed="true">Client User</button>
+<button type="button" id="roleAdmin" aria-pressed="false">Administrator</button>
+</div>
+<div id="gateErr" class="gate-err" hidden></div>
+<form id="gateForm" autocomplete="off">
+<div class="field" id="gateClientField">
+<label for="gateClient">Company Code</label>
+<input id="gateClient" type="text" placeholder="e.g. C1001" autocapitalize="characters" spellcheck="false" maxlength="24"/>
+<p class="hint" style="margin-top:6px">Type your company code exactly as issued, for example <b>C1001</b>.</p>
+</div>
+<div class="field">
+<label for="gatePw" id="gatePwLab">Password</label>
+<div class="pwwrap">
+<input id="gatePw" type="password" placeholder="Enter password"/>
+<button type="button" class="eye" id="gateEye" aria-label="Show password">SHOW</button>
+</div>
+</div>
+<div class="btnbar" style="margin-top:16px">
+<button class="btn" type="submit" id="gateGo">Sign In &rarr;</button>
+</div>
+</form>
+<p class="gate-note" id="gateNote" hidden></p>
+</div>
+</div>
+</div>
+
+<!-- ============ HEADER ============ -->
+<hr class="brandrule"/>
+<header class="masthead">
+<div class="wrap">
+<div class="brandlogo">
+  <span class="tc-logo-hover" style="height:62px;">
+    <img class="logo-normal" id="mainLogo" src="" alt="TalentCarriage"/>
+    <img class="logo-3d" id="mainLogo3d" src="" alt="TalentCarriage 3D"/>
+  </span>
+</div>
+<div class="titlewrap">
+<h1>CTC <em>Calculator</em></h1>
+</div>
+<div class="stamp">
+<div class="sessbar">
+<span class="sesschip" id="sessRoleChip">Role <b id="sessRole">&mdash;</b></span>
+<span class="sesschip cli" id="sessClientChip">Client <b id="sessClient">&mdash;</b></span>
+<button class="btn ghost tiny" type="button" id="btnLogout">Sign out</button>
+</div>
+</div>
+</div>
+</header>
+
+<!-- ============ NAV TABS ============ -->
+<nav class="tabs" role="tablist" aria-label="Sections">
+<div class="wrap">
+<button class="tab" role="tab" id="tab-calc" aria-controls="p-calc" aria-selected="true">01 · Calculator</button>
+<button class="tab" role="tab" id="tab-grid" aria-controls="p-grid" aria-selected="false">02 · Employee Grid</button>
+<button class="tab" role="tab" id="tab-fx" aria-controls="p-fx" aria-selected="false">03 · Formula Builder</button>
+<button class="tab" role="tab" id="tab-cfg" aria-controls="p-cfg" aria-selected="false">04 · Config</button>
+<button class="tab" role="tab" id="tab-admin" aria-controls="p-admin" aria-selected="false" hidden>05 · Admin Panel</button>
+<button class="tab" role="tab" id="tab-help" aria-controls="p-help" aria-selected="false">06 · Read Me</button>
+</div>
+</nav>
+
+<main class="wrap">
+
+<!-- ============ 01 CALCULATOR ============ -->
+<section class="panel on" id="p-calc" role="tabpanel" aria-labelledby="tab-calc">
+<div class="grid2">
+<form class="card" id="calcForm" autocomplete="off">
+<h3>Input Sheet</h3>
+<div class="body">
+<div class="field admonly"><label for="f_name">Employee / Reference</label><input id="f_name" type="text" value="Sample Employee"/></div>
+<div class="field"><label for="f_state">State / Zone</label><select id="f_state"></select></div>
+<div class="field"><label for="f_cat">Skill Category</label><select id="f_cat"><option>UNSKILLED</option><option selected>SEMI-SKILLED</option><option>SKILLED</option><option>HIGHLY SKILLED</option></select></div>
+<div class="row2">
+<div class="field targetbox"><label for="f_basis">Input Basis</label><select id="f_basis"><option value="WAGES" selected>Total Wages</option><option value="CTC">Target CTC</option><option value="NETTH">Net Take Home</option></select></div>
+<div class="field targetbox"><label for="f_amt">Monthly Amount ₹</label><input id="f_amt" type="number" step="1" value="24347"/></div>
+</div>
+<div class="field admonly"><label for="f_etype">Employment Type</label><select id="f_etype"><option value="REGULAR EMP">REGULAR EMP</option><option value="RETAINER">RETAINER</option><option value="CONSULTING FEE">CONSULTING FEE</option></select></div>
+<div class="row2">
+<div class="field statbox"><label for="f_pf">PF Applicable</label><select id="f_pf"><option>Y</option><option>N</option></select></div>
+<div class="field statbox"><label for="f_esi">ESI Applicable</label><select id="f_esi" disabled><option>Y</option><option>N</option></select><p class="hint">Auto-calculated from gross salary.</p></div>
+</div>
+<div class="row2">
+<div class="field"><label for="f_metro">Metro (HRA)</label><select id="f_metro"><option>Y</option><option>N</option></select></div>
+<div class="field admonly"><label for="f_pfb">PF Basis</label><select id="f_pfb"><option>On 15K</option><option>On Actual Basic</option></select></div>
+</div>
+<div class="row2">
+<div class="field"><label for="f_incent">Incentive (% of CTC)</label><input id="f_incent" type="number" step="0.01" min="0" max="100" value="0"/></div>
+<div class="field"><label for="f_bonus">Bonus (Y/N)</label><select id="f_bonus"><option>Y</option><option>N</option></select></div>
+</div>
+<p class="hint">Statutory bonus applies automatically when Basic is below ₹21,000. Incentive produces <b>TTC = CTC + Incentive</b>.</p>
+<div class="row2 admonly">
+<div class="field"><label for="f_da">DA (fixed) ₹</label><input id="f_da" type="number" step="1" value="0"/></div>
+<div class="field"><label for="f_fix">Other Fixed Heads ₹</label><input id="f_fix" type="number" step="1" value="0"/></div>
+</div>
+<div class="btnbar" style="margin-top:14px">
+<button class="btn admonly" type="button" id="btnPush">Push to Grid →</button>
+<button class="btn ghost" type="button" id="btnReset">Reset</button>
+</div>
+</div>
+</form>
+<div>
+<div id="calcAlerts"></div>
+<div class="result-head" id="kpis"></div>
+<div class="card"><h3>Salary Structure</h3><div class="body" style="padding:0">
+<table class="slip"><thead><tr><th>Component</th><th>Monthly ₹</th><th>Annual ₹</th></tr></thead><tbody id="slipBody"></tbody></table>
+</div></div>
+</div>
+</div>
+</section>
+
+<!-- ============ 02 GRID ============ -->
+<section class="panel" id="p-grid" role="tabpanel" aria-labelledby="tab-grid">
+<div class="toolbar">
+<button class="btn" id="gAdd">+ Add Employee</button>
+<button class="btn ghost" id="gDupe">Duplicate Last</button>
+<button class="btn ghost" id="gImport">Import CSV</button>
+<button class="btn ghost" id="gTpl">Template</button>
+<button class="btn ghost" id="gCsv">Export CSV</button>
+<button class="btn ghost" id="gJson">Export JSON</button>
+<select id="gClientSel" class="mini" aria-label="Active client" hidden></select>
+<span class="spacer"></span>
+<span class="chip">Client <b id="cActive">&mdash;</b></span>
+<span class="chip">Rows <b id="cRows">0</b></span>
+<span class="chip">Custom cols <b id="cCols">0</b></span>
+<span class="chip">Payroll ₹ <b id="cSum">0</b></span>
+<button class="btn ghost danger" id="gClear">Clear All</button>
+<button class="btn ghost" id="gFill" aria-pressed="false">Fill values</button>
+<button class="btn ghost" id="gCalc" aria-pressed="false">Calculation part</button>
+<input type="file" id="fileCsv" accept=".csv,text/csv" hidden/>
+</div>
+<div class="gridwrap"><table class="dg" id="dg"><thead id="dgHead"></thead><tbody id="dgBody"></tbody></table></div>
+</section>
+
+<!-- ============ 03 FORMULA ============ -->
+<section class="panel" id="p-fx" role="tabpanel" aria-labelledby="tab-fx">
+<div class="grid2">
+<div class="card"><h3>New / Edit Formula Column</h3><div class="body">
+<div class="field"><label for="fxName">Column Name</label><input id="fxName" type="text" placeholder="e.g. Annual CTC"/></div>
+<div class="field"><label for="fxExpr">Formula</label><textarea id="fxExpr" rows="4" placeholder="[CTC] * 12"></textarea></div>
+<div class="row2">
+<div class="field"><label for="fxDec">Decimals</label><select id="fxDec"><option value="0" selected>0</option><option value="1">1</option><option value="2">2</option></select></div>
+<div class="field"><label for="fxPrefix">Prefix</label><input id="fxPrefix" type="text" value="₹" style="text-align:left"/></div>
+</div>
+<div class="field"><label>Insert Column Token</label><div class="tokens" id="tokCols"></div></div>
+<div class="field"><label>Insert Function</label><div class="tokens" id="tokFns"></div></div>
+<div id="fxPreview" class="alert ok" style="display:none"></div>
+<div class="btnbar">
+<button class="btn" id="fxSave">Save Column</button>
+<button class="btn ghost" id="fxTest">Test on Row 1</button>
+<button class="btn ghost" id="fxCancel">Cancel Edit</button>
+</div>
+</div></div>
+<div class="card"><h3>Formula Columns <span id="fxCount"></span></h3><div class="body" id="fxList"></div></div>
+</div>
+</section>
+
+<!-- ============ 04 CONFIG ============ -->
+<section class="panel" id="p-cfg" role="tabpanel" aria-labelledby="tab-cfg">
+<div class="grid2">
+<div class="card"><h3>Statutory Constants</h3><div class="body" id="cfgBody"></div>
+<div class="body" style="border-top:1px solid var(--rule)"><div class="btnbar">
+<button class="btn" id="cfgSave">Apply Constants</button>
+<button class="btn ghost" id="cfgReset">Restore Defaults</button>
+</div></div></div>
+<div class="card"><h3>Minimum Wage Master</h3><div class="body" style="padding:0"><div style="max-height:62vh;overflow:auto">
+<table class="dg" id="mwTable"><thead><tr><th>State / Zone</th><th>Revised</th><th>Unskilled</th><th>Semi-Skilled</th><th>Skilled</th><th>Highly Skilled</th></tr></thead><tbody id="mwBody"></tbody></table>
+</div></div></div>
+</div>
+</section>
+
+<!-- ============ 05 ADMIN — TABBED SETTINGS PANEL ============ -->
+<section class="panel" id="p-admin" role="tabpanel" aria-labelledby="tab-admin">
+<div class="admgrid" style="margin-bottom:20px">
+<div class="admstat"><div class="k">Clients configured</div><div class="v" id="aClients">0</div></div>
+<div class="admstat"><div class="k">Password protected</div><div class="v" id="aLocked">0</div></div>
+<div class="admstat"><div class="k">Employee records</div><div class="v" id="aRows">0</div></div>
+<div class="admstat"><div class="k">Formula columns</div><div class="v" id="aFx">0</div></div>
+</div>
+<!-- v37: SETTINGS CONTAINER WITH TABS -->
+<div class="settings-container">
+<div class="settings-tabs" id="settingsTabs">
+<button class="stab active" data-target="st-security">🔐 Security</button>
+<button class="stab" data-target="st-workspace">📂 Workspace</button>
+<button class="stab" data-target="st-vault">💾 Data Vault</button>
+<button class="stab" data-target="st-visibility">👁️ Visibility</button>
+<button class="stab" data-target="st-encryption">🔒 Encryption</button>
+<button class="stab" data-target="st-access">🛡️ Access Control</button>
+</div>
+<!-- TAB 1: Security -->
+<div id="st-security" class="spanel active">
+<div class="card"><h3>Administrator Security</h3><div class="body">
+<div class="field"><label for="aOld">Current admin password</label><input id="aOld" type="password" placeholder="Required to change"/></div>
+<div class="row2">
+<div class="field"><label for="aNew">New admin password</label><input id="aNew" type="password" placeholder="Minimum 4 characters"/></div>
+<div class="field"><label for="aNew2">Confirm new password</label><input id="aNew2" type="password" placeholder="Re-enter"/></div>
+</div>
+<div class="btnbar"><button class="btn" type="button" id="aPwSave">Update Admin Password</button></div>
+</div></div>
+</div>
+<!-- TAB 2: Workspace -->
+<div id="st-workspace" class="spanel">
+<div class="card"><h3>Active Client Workspace</h3><div class="body">
+<div class="field"><label for="aActive">Currently viewing</label><select id="aActive"></select></div>
+<p class="hint">Switching here changes which client's employee list loads.</p>
+<div class="btnbar" style="margin-top:14px">
+<button class="btn ghost" type="button" id="aBackup">Export Full Backup</button>
+<button class="btn ghost" type="button" id="aRestoreBtn">Import Backup</button>
+<button class="btn ghost danger" type="button" id="aFactory">Factory Reset</button>
+<input type="file" id="aRestoreFile" accept=".json" hidden/>
+</div>
+</div></div>
+</div>
+<!-- TAB 3: Vault -->
+<div id="st-vault" class="spanel">
+<div class="card"><h3>Local Data Vault</h3><div class="body">
+<div class="vaultbar"><span class="vdot off" id="vDot"></span><span class="vpath" id="vPath">Checking…</span></div>
+<div class="btnbar" style="justify-content:flex-start">
+<button class="btn" type="button" id="vPick">Choose Folder</button>
+<button class="btn ghost" type="button" id="vSaveNow">Save Now</button>
+<button class="btn ghost" type="button" id="vLoad">Load From Disk</button>
+<button class="btn ghost" type="button" id="vDownload">Download JSON</button>
+<button class="btn ghost danger" type="button" id="vUnlink" hidden>Unlink</button>
+</div>
+</div></div>
+</div>
+<!-- TAB 4: Visibility -->
+<div id="st-visibility" class="spanel">
+<div class="card"><h3>Client User Visibility</h3><div class="body">
+<div class="vizrow"><label for="uRestricted">Restricted tabs</label>
+<select id="uRestricted"><option value="readonly">Visible — read-only</option><option value="hidden">Hidden — removed from tab bar</option></select></div>
+<div class="btnbar" style="margin-top:12px"><button class="btn" type="button" id="uSave">Apply</button><span class="spacer"></span><span class="hint" id="uStat">—</span></div>
+</div></div>
+</div>
+<!-- TAB 5: Encryption -->
+<div id="st-encryption" class="spanel">
+<div class="card"><h3>Data Encryption — AES-256</h3><div class="body">
+<div class="mailrow"><label>Status</label><span class="seal off" id="encSeal">Not encrypted</span></div>
+<div class="mailrow"><label for="encP1">Passphrase</label><input type="password" id="encP1" placeholder="at least 8 characters"/></div>
+<div class="mailrow"><label for="encP2">Confirm</label><input type="password" id="encP2" placeholder="type it again"/></div>
+<div class="mailrow"><label for="encKeep">Keychain</label><label style="display:flex;gap:8px;align-items:center;font-size:13px"><input type="checkbox" id="encKeep" style="width:auto"/>Remember key on this device</label></div>
+<div class="btnbar" style="justify-content:flex-start">
+<button class="btn" type="button" id="encApply">Enable / Change</button>
+<button class="btn ghost" type="button" id="encLock">Lock Now</button>
+<button class="btn ghost" type="button" id="encOff">Turn Off</button>
+<span class="spacer"></span><span class="hint" id="encHint">No passphrase set</span>
+</div>
+</div></div>
+</div>
+<!-- TAB 6: Access Control -->
+<div id="st-access" class="spanel">
+<div class="card"><h3>Client Access Control</h3><div class="body" style="padding:0">
+<div class="toolbar" style="margin:0;border-bottom:1px solid var(--rule)">
+<button class="btn ghost" type="button" id="aReveal">Show / Hide Passwords</button>
+<button class="btn ghost" type="button" id="aClearAllPw">Clear All Passwords</button>
+<span class="spacer"></span><span class="chip">Total clients <b id="aCount">0</b></span>
+</div>
+<div style="max-height:64vh;overflow:auto">
+<table class="adm" id="admTable"><thead><tr><th>Client Code</th><th>State / Zone</th><th>Skill Type</th><th>Password</th><th>Status</th><th>Records</th><th>Actions</th></tr></thead><tbody id="admBody"></tbody></table>
+</div>
+</div></div>
+</div>
+</div><!-- /settings-container -->
+</section>
+
+<!-- ============ 06 README ============ -->
+<section class="panel" id="p-help" role="tabpanel" aria-labelledby="tab-help">
+<div class="card"><div class="body" style="max-width:78ch">
+<h2 style="font-size:26px;margin-bottom:10px">How it works — v37</h2>
+<p><b>Core rule:</b> Basic = MAX(MW, Wages × 50%). PF, ESIC, Bonus, Gratuity, HRA auto-calculated.</p>
+<p><b>Reverse mode:</b> Target CTC or Net Take Home → engine back-solves Total Wages in 3 passes.</p>
+<p><b>Formula Builder:</b> Reference columns with [KEY]. Functions: IF, MIN, MAX, ROUND, ABS, SUM, AVG, AND, OR, NOT, SQRT.</p>
+<h3 style="margin-top:22px">v37 Changes</h3>
+<ul>
+<li>Logo hover: fade + bump effect with 3D logo</li>
+<li>Settings panel: tabbed container (Security, Workspace, Vault, Visibility, Encryption, Access Control)</li>
+<li>Dynamic client formulas (no hardcoded rules)</li>
+<li>Multi-file web app structure</li>
+</ul>
+</div></div>
+</section>
+
+</main>
+
+<!-- MODALS -->
+<div id="toast" role="status" aria-live="polite"></div>
+<div class="modal glass" id="pwModal" hidden>
+<div class="modalcard">
+<h3 id="pwTitle">Administrator authorisation</h3>
+<p id="pwBody">Enter the administrator password to continue.</p>
+<div class="pwrow"><label for="pwInput">Administrator password</label><input id="pwInput" type="password" autocomplete="off" placeholder="Enter password"/></div>
+<div class="pwerr" id="pwErr" hidden>Incorrect password.</div>
+<div class="btnbar"><button class="btn ghost" type="button" id="pwNo">Cancel</button><button class="btn danger" type="button" id="pwYes">Authorise</button></div>
+</div>
+</div>
+<div class="modal" id="confirmModal" hidden>
+<div class="sheet" role="dialog"><h3 id="cmTitle">Confirm</h3><div class="body" id="cmBody"></div>
+<footer><button class="btn ghost" id="cmNo">Cancel</button><button class="btn danger" id="cmYes">Yes, do it</button></footer>
+</div>
+</div>
+<div id="encGate" hidden role="dialog">
+<div class="encbox">
+<h2 id="encTitle">Data is <em>locked</em></h2>
+<p>Enter the passphrase to decrypt. Without it the contents cannot be recovered.</p>
+<div class="encerr" id="encErr" hidden></div>
+<form id="encForm" autocomplete="off">
+<input id="encPass" type="password" placeholder="Vault passphrase"/>
+<div class="btnbar" style="margin-top:18px"><button class="btn" type="submit" id="encGo">Unlock →</button><span class="spacer"></span><button class="btn ghost" type="button" id="encWipe">Forgot — start fresh</button></div>
+</form>
+</div>
+</div>
+
+<footer class="colophon"><div class="wrap">TalentCarriage · CTC Calculator v37 · Multi-File Web App · © TalentCarriage</div></footer>
+
+<!-- JS Modules — load order matters -->
+<script src="js/assets.js"></script>
+<script src="js/data.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/formula.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/grid.js"></script>
+<script src="js/admin.js"></script>
+<script src="js/vault.js"></script>
+<script src="js/settings-tabs.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
